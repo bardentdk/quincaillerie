@@ -67,7 +67,7 @@ const submit = () => {
             <div class="p-6 bg-slate-50 border-t border-slate-100 text-center">
                 <p class="text-sm text-slate-500 font-body">
                     Pas encore de compte ? 
-                    <a href="#" class="text-brand-blue font-bold hover:underline">Demander une ouverture de compte</a>
+                    <Link :href="route('register')" class="text-brand-blue font-bold hover:underline">Demander une ouverture de compte</Link>
                 </p>
             </div>
         </div>

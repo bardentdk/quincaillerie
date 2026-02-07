@@ -24,6 +24,9 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'phone',          // Ajouté pour le suivi livraison
+        'is_pro',         // Pour différencier particulier/pro
+        'company_name',   // Optionnel pour les particuliers
     ];
 
     /**

@@ -4,40 +4,40 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use App\Services\BrevoMailService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rules;
 use Inertia\Inertia;
 
 class RegisteredUserController extends Controller
 {
-    public function create() { return Inertia::render('Auth/Register'); }
+    public function create()
+    {
+        return Inertia::render('Auth/Register');
+    }
 
-    public function store(Request $request, BrevoMailService $brevo)
+    public function store(Request $request)
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|confirmed|min:8',
+            'email' => 'required|string|email|max:255|unique:'.User::class,
+            'password' => ['required', 'confirmed', Rules\Password::defaults()],
             'is_pro' => 'boolean',
-            'company_name' => 'required_if:is_pro,true|nullable|string|max:255',
+            'phone' => 'nullable|string|max:20',
         ]);
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'is_pro' => $request->is_pro,
-            'company_name' => $request->company_name,
+            'is_pro' => $request->is_pro ?? false,
             'phone' => $request->phone,
         ]);
 
         Auth::login($user);
 
-        // Envoi du mail de bienvenue via Brevo
-        $brevo->sendWelcomeEmail($user);
-
+        // Redirection vers le dashboard client
         return redirect()->route('customer.dashboard');
     }
 }
