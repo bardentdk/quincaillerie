@@ -6,6 +6,8 @@ use Brevo\Client\Api\TransactionalEmailsApi;
 use Brevo\Client\Configuration;
 use Brevo\Client\Model\SendSmtpEmail;
 use GuzzleHttp\Client;
+use Exception;
+use Illuminate\Support\Facades\Log;
 
 class BrevoMailService
 {
@@ -13,23 +15,45 @@ class BrevoMailService
 
     public function __construct()
     {
-        // Récupération sécurisée de la clé API via le config
+        // Configuration de l'API avec ta clé
         $config = Configuration::getDefaultConfiguration()->setApiKey('api-key', config('services.brevo.key'));
-        $this->apiInstance = new TransactionalEmailsApi(new Client(), $config);
+        
+        $this->apiInstance = new TransactionalEmailsApi(
+            new Client(),
+            $config
+        );
     }
     
     public function sendWelcomeEmail($user)
     {
-        $sendSmtpEmail = new \Brevo\Client\Model\SendSmtpEmail([
-            'subject' => "Bienvenue chez Quincaillerie ARCS Pro !",
-            'sender' => ['name' => 'Équipe ARCS', 'email' => config('mail.from.address')],
-            'to' => [['email' => $user->email, 'name' => $user->name]],
-            'htmlContent' => "<h1>Bienvenue {$user->name} !</h1><p>Votre compte est prêt. " . ($user->is_pro ? "Notre équipe étudie vos avantages Pro." : "") . "</p>",
+        $sendSmtpEmail = new SendSmtpEmail([
+            'subject' => "Bienvenue chez Quincaillerie ARCS Pro - Bras-Panon",
+            'sender' => [
+                'name' => config('mail.from.name'), 
+                'email' => config('mail.from.address')
+            ],
+            'to' => [[
+                'email' => $user->email, 
+                'name' => $user->name
+            ]],
+            'htmlContent' => "
+                <div style='font-family: Arial, sans-serif; color: #333;'>
+                    <h1 style='color: #00429d;'>Félicitations {$user->name} !</h1>
+                    <p>Votre compte est désormais actif sur notre plateforme.</p>
+                    <p>Vous pouvez accéder à votre espace client pour suivre vos commandes et gérer vos informations.</p>
+                    <div style='margin-top: 20px; padding: 15px; background-color: #f8fafc; border-radius: 10px;'>
+                        <p style='margin: 0;'><strong>Type de compte :</strong> " . ($user->is_pro ? 'Professionnel' : 'Particulier') . "</p>
+                    </div>
+                    <p style='margin-top: 20px;'>À très bientôt dans notre magasin de Bras-Panon !</p>
+                </div>",
         ]);
 
         try {
-            $this->apiInstance->sendTransacEmail($sendSmtpEmail);
-        } catch (\Exception $e) { \Log::error($e->getMessage()); }
+            return $this->apiInstance->sendTransacEmail($sendSmtpEmail);
+        } catch (Exception $e) {
+            Log::error("Échec de l'envoi Brevo (SDK getbrevo) : " . $e->getMessage());
+            return false;
+        }
     }
     /**
      * Mail envoyé automatiquement dès que Stripe valide le paiement

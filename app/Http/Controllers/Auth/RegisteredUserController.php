@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rules;
+use App\Services\BrevoMailService; // N'oublie pas l'import
 use Inertia\Inertia;
 
 class RegisteredUserController extends Controller
@@ -34,6 +35,8 @@ class RegisteredUserController extends Controller
             'is_pro' => $request->is_pro ?? false,
             'phone' => $request->phone,
         ]);
+        // Appel du SDK Brevo via notre service
+        $brevoService->sendWelcomeEmail($user);
 
         Auth::login($user);
 
