@@ -71,4 +71,8 @@ Route::middleware('auth')->group(function () {
             ? redirect()->route('admin.dashboard') 
             : redirect()->route('customer.dashboard');
     })->name('dashboard');
+
+    Route::get('/checkout/cancel', function () {
+        return redirect()->route('cart.index')->with('message', 'Le paiement a été annulé.');
+    })->name('checkout.cancel');
 });
