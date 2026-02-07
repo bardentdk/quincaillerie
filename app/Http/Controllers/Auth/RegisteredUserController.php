@@ -18,7 +18,7 @@ class RegisteredUserController extends Controller
         return Inertia::render('Auth/Register');
     }
 
-    public function store(Request $request)
+    public function store(Request $request, BrevoMailService $brevoService)
     {
         $request->validate([
             'name' => 'required|string|max:255',
