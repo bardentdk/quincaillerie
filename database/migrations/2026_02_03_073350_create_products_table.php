@@ -16,13 +16,16 @@ return new class extends Migration
             $table->string('name');
             $table->string('slug')->unique();
             $table->text('description');
-            $table->integer('price_cents'); // On stocke en centimes pour Stripe
+            $table->integer('price_cents');
             $table->integer('stock_quantity')->default(0);
-            $table->string('sku')->unique(); // Référence quincaillerie
-            $table->foreignId('category_id')->constrained();
-            $table->json('seo_metadata')->nullable(); // Pour le SEO sur mesure
+            $table->string('sku')->unique();
+            $table->json('seo_metadata')->nullable();
             $table->boolean('is_active')->default(true);
-            $table->foreignId('category_id')->constrained('categories')->onDelete('cascade');
+            
+            // La seule et unique définition de la catégorie
+            $table->foreignId('category_id')->constrained()->onDelete('cascade');
+            
+            // Note: 'unit' doit être géré par ta migration 2026_02_03_163227_add_unit_to_products_table.php
             $table->timestamps();
         });
     }
