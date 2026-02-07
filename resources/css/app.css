@@ -1,0 +1,19 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand-blue: #00429d;
+  --color-brand-yellow: #ffde00;
+  
+  --font-heading: "Roboto Condensed", sans-serif;
+  --font-body: "Inter", sans-serif;
+}
+
+/* Base styles pour le projet */
+@layer base {
+  h1, h2, h3, h4 {
+    @apply font-heading font-bold uppercase tracking-tight;
+  }
+  body {
+    @apply font-body text-slate-900 bg-slate-50;
+  }
+}
