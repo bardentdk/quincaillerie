@@ -22,6 +22,7 @@ return new class extends Migration
             $table->foreignId('category_id')->constrained();
             $table->json('seo_metadata')->nullable(); // Pour le SEO sur mesure
             $table->boolean('is_active')->default(true);
+            $table->foreignId('category_id')->constrained('categories')->onDelete('cascade');
             $table->timestamps();
         });
     }
