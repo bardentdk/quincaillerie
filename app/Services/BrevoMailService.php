@@ -15,11 +15,18 @@ class BrevoMailService
 
     public function __construct()
     {
-        // Configuration de l'API avec ta clé
-        $config = Configuration::getDefaultConfiguration()->setApiKey('api-key', config('services.brevo.key'));
+        // On récupère la clé depuis le fichier config (et non directement env())
+        $apiKey = config('services.brevo.key');
+
+        // DEBUG TEMPORAIRE : Décommente la ligne suivante pour vérifier dans tes logs 
+        // si la clé est bien lue par Laravel (n'oublie pas de la supprimer après !)
+        // \Log::info('Brevo Key start: ' . substr($apiKey, 0, 10));
+
+        $config = new \Brevo\Client\Configuration(); // Utilisation d'une nouvelle instance
+        $config->setApiKey('api-key', $apiKey);
         
-        $this->apiInstance = new TransactionalEmailsApi(
-            new Client(),
+        $this->apiInstance = new \Brevo\Client\Api\TransactionalEmailsApi(
+            new \GuzzleHttp\Client(),
             $config
         );
     }
